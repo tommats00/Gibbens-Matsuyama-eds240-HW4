@@ -11,13 +11,16 @@ execute:
   message: false
   eval: true
 ---
+
 ## Load libraries
+
 ```{r}
 library(tidyverse)
 library(here)
 ```
 
 ## Load data
+
 ```{r}
 water_shortage <- read_csv(here("data", "actual_water_shortage_level.csv"))
 five_year_shortage <- read_csv(here("data", "five_year_water_shortage_outlook.csv"))
@@ -55,7 +58,32 @@ The most important columns/variables in this DataFrame are water_use_acre_feet a
 -   How many PWSID's are meeting the demand in each city?
 -   Are there specific cities that meed the supply/demand more than other?
 
-#### Creating supply/demand difference column & plotting it 
+#### Exploring the data
+
+```{r}
+# View how many org_ids there are
+length(unique(five_year_shortage$org_id))
+
+# View how many PWSID (water systems ORG IDs use) 
+length(unique(five_year_shortage$pwsid))
+
+# View supplier name, should have same length as ORG ID 
+length(unique(five_year_shortage$supplier_name))
+
+# View UWMP, should only be a value of 1
+length(unique(five_year_shortage$uwmp_year))
+
+# Range should be from Jan 2021 to Dec 2025
+range(unique(five_year_shortage$forecast_start_date))
+
+range(unique(five_year_shortage$forecast_end_date))
+
+# View NAs for metric data
+is.na(five_year_shortage$water_use_acre_feet)
+```
+
+#### Creating supply/demand difference column & plotting it
+
 ```{r}
 # Explore five_year_shortage DataFrame
 length(unique(five_year_shortage$supplier_name))
@@ -77,6 +105,7 @@ ggplot(five_year_shortage, aes(supply_demand_diff)) +
 ```
 
 #### Plotting each Org ID's water surplus or shortage
+
 ```{r}
 # Plot Org Id water surplus and shortage 
 five_year_group <- five_year_shortage %>% 
@@ -92,6 +121,7 @@ ggplot(five_year_group, aes(x = org_id, y = mean_diff)) +
 ```
 
 #### Plotting Goleta, California Water Use and Supply
+
 ```{r}
 # Let's take a look at projections for Goleta
 
@@ -112,6 +142,7 @@ five_year_goleta
 ```
 
 ### Make a function that plots Org ID surplus and shortage
+
 ```{r}
 surplus_shortage_fun <- function(id){
   five_year_shortage %>% 
@@ -133,7 +164,6 @@ surplus_shortage_fun <- function(id){
 # View Ventura's water use and supply 
 surplus_shortage_fun(2158)
 ```
-
 
 ### Historical Production
 
@@ -157,7 +187,6 @@ This is by far the biggest DataFrame with over 900,000 observations. Variables o
   geom_col() +
   coord_flip()
 ```
-
 
 ### Monthly Water Shortage
 
@@ -183,7 +212,6 @@ ggplot(monthly_dropna, aes(x = state_standard_shortage_level, y = shortage_surpl
   geom_col()
 ```
 
-
 ### Source Name
 
 From the FlowWest Github page: This table summarizes the facility type, status, and location by public water system and facility. These data are from SDWIS and processed within the SAFER Clearinghouse. These data are assigned through facility permitting process and are not user reported, and often validated through on-the-ground field visits. The data are filtered to include the most recent data; out of date data are not included. Currently, no documentation has been published for these data.
@@ -198,22 +226,17 @@ Variables/columns of interest are **supplier_name** and **state_standard_shortag
 
 ## Answer Questions
 
-1. What have you learned about your data? Have any potentially interesting patterns emerged? 
-I have quite a few dataframes that I am working with. I was mostly focused on the projected five year water shortage data. There aren't many things that I can measure from this dataframe as the main metrics are water supply and water use in acres feet. It is hard to look at the trends of the entire dataframe. You need to filter to specific locations to easily view the trends. I made a function that is able to specify location by `org_id`. 
+1.  What have you learned about your data? Have any potentially interesting patterns emerged? I have quite a few dataframes that I am working with. I was mostly focused on the projected five year water shortage data. There aren't many things that I can measure from this dataframe as the main metrics are water supply and water use in acres feet. It is hard to look at the trends of the entire dataframe. You need to filter to specific locations to easily view the trends. I made a function that is able to specify location by `org_id`.
 
-2. In HW1, you outlined some questions that you wanted to answer using these data. Have you made any strides towards answering those questions? 
-The questions I asked from HW1 were questions my clients wants to have answered. I have not made any strides towards answering these yet. I have to work with the other data sets more and possibly merge them together. Since the last homework, questions have been changed/introduced. Some of them considered high priority by the client are as follows: 
-- Please describe how you would calculate supply and demand changes over time across California (local, regional, state-wide)?  - - Are the following questions relevant in addressing this question: 
-- How is my change in supply/demand relative to those around me? 
-- Is the rate of supply and/or demand increasing or decreasing? 
-- What are the factors that cause my supply/demand to change? 
-- How is the population in my area changing over time and how is this affecting the demand?
-- How much water does agriculture/big industrial sites consume in the area? How is this changing the demand pattern?
+2.  In HW1, you outlined some questions that you wanted to answer using these data. Have you made any strides towards answering those questions? The questions I asked from HW1 were questions my clients wants to have answered. I have not made any strides towards answering these yet. I have to work with the other data sets more and possibly merge them together. Since the last homework, questions have been changed/introduced. Some of them considered high priority by the client are as follows:
 
-For the purpose of this project and class, I would like to possible answer some of these questions comparing past, present, and projected data sets. 
+-   Please describe how you would calculate supply and demand changes over time across California (local, regional, state-wide)? - - Are the following questions relevant in addressing this question:
+-   How is my change in supply/demand relative to those around me?
+-   Is the rate of supply and/or demand increasing or decreasing?
+-   What are the factors that cause my supply/demand to change?
+-   How is the population in my area changing over time and how is this affecting the demand?
+-   How much water does agriculture/big industrial sites consume in the area? How is this changing the demand pattern?
 
-3. What challenges do you forsee encountering with your data? 
-I think it will be a challenge making interesting plots. Like Annie pointed out, my client is looking for more of an analysis of the data which might not include interesting plots. I will have to come up with a specific question that can not only answer one of my client's questions, but also tell an interesting story for the class. 
+For the purpose of this project and class, I would like to possible answer some of these questions comparing past, present, and projected data sets.
 
-
-
+3.  What challenges do you forsee encountering with your data? I think it will be a challenge making interesting plots. Like Annie pointed out, my client is looking for more of an analysis of the data which might not include interesting plots. I will have to come up with a specific question that can not only answer one of my client's questions, but also tell an interesting story for the class.
