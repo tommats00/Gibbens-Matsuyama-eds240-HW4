@@ -164,6 +164,33 @@ ggplot(level_filtered, aes(x = month, y = mean_level, fill = county)) +
 
 ### Plot 3
 ```{r}
+
+
+historical_filter <- historical_production %>%
+  filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
+         !is.na(quantity_acre_feet)) %>% 
+  group_by(org_id, start_date, water_produced_or_delivered) %>% 
+  summarise(quantity = sum(quantity_acre_feet)) %>% 
+  pivot_wider(names_from = water_produced_or_delivered,
+              values_from = quantity) 
+
+historical_filter$surplus <- historical_filter$`water produced` - historical_filter$`water delivered`
+
+historical_filter <- historical_filter %>% 
+  mutate(county = case_when(
+    org_id %in% c(376, 2158, 2629, 2631) ~ "Ventura",
+    org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacremento",
+    TRUE ~ "other"
+  )) %>% 
+  mutate(year = year(start_date)) %>% 
+  filter(year > 2018)
+
+ggplot(historical_filter, aes(x = start_date, y = surplus, color = county)) +
+  geom_line()
+
+
+
+
 historical_filtered_prod <- historical_production %>% 
   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
          !is.na(quantity_acre_feet),
@@ -173,6 +200,13 @@ historical_filtered_deliver <- historical_production %>%
   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
          !is.na(quantity_acre_feet),
          water_produced_or_delivered == "water delivered") 
+
+
+
+
+
+
+
 
 ggplot(historical_filtered_prod,aes(x = quantity_acre_feet, y = water_type, fill = )) +
          geom_col()
