@@ -7,53 +7,56 @@ editor_options:
   chunk_output_type: console
 ---
 
-### 1. Which option do you plan to pursue? 
+### 1. Which option do you plan to pursue?
+
 I am going to pursue the first option, which is the one I planned on doing since the start.
 
-### 2. Reinstate your question(s). Has this changed at all since HW #1? How so? 
-From working with the data I have boiled it down to understanding the differences between Sacramento county and Ventura County. I have past, present, and future data in one shape or form for both of these counties. I don't believe I have the best data as there is room for a lot of interpretation, but I can use each one to represent a figure on my visualization. I am interested in how different these two counties are given their geographic differences. A better comparison would be to directly measure between a more northern and more southern county, but these counties had the most data. 
+### 2. Reinstate your question(s). Has this changed at all since HW #1? How so?
+
+From working with the data I have boiled it down to understanding the differences between Sacramento county and Ventura County. I have past, present, and future data in one shape or form for both of these counties. I don't believe I have the best data as there is room for a lot of interpretation, but I can use each one to represent a figure on my visualization. I am interested in how different these two counties are given their geographic differences. A better comparison would be to directly measure between a more northern and more southern county, but these counties had the most data.
 
 ### 3. Explain which variables from your data set(s) you will use to answer your question(s) and how
+
 The variables of interest are as follows:
 
-- `org_id`: An organizational ID that refers to a specific water agency
-- `forecast_start_date`: Start date for projected data
-- `supplier_name`: Name of the supplier 
+-   `org_id`: An organizational ID that refers to a specific water agency
+-   `forecast_start_date`: Start date for projected data
+-   `supplier_name`: Name of the supplier
 
-These variables are present in each dataset. `supplier_name` and `org_id` will be used to identify the water agencies in Ventura and Sacramento counties. These will be paired with `forecast_start_date` to plot the respective values from each dataset onto a time series plot. 
+These variables are present in each dataset. `supplier_name` and `org_id` will be used to identify the water agencies in Ventura and Sacramento counties. These will be paired with `forecast_start_date` to plot the respective values from each dataset onto a time series plot.
 
 The variables of interest within the past dataset (`historical_production`) are:
 
-- `water_produced_or_delivered`: If the water is being produced or delivered 
-- `water_type`: What type of facility the water is coming from or going to
-- `quanitity_acre_feet`: In units acre-feet, the quanitity of water from each observation
+-   `water_produced_or_delivered`: If the water is being produced or delivered
+-   `water_type`: What type of facility the water is coming from or going to
+-   `quanitity_acre_feet`: In units acre-feet, the quanitity of water from each observation
 
-These variables, along with the general variables, will be used to identify the differences of water type production/delivery between Sacramento and Ventura counties. 
+These variables, along with the general variables, will be used to identify the differences of water type production/delivery between Sacramento and Ventura counties.
 
 The variables of interest with the present dataset (`water_shortage`) are:
 
-- `state_standard_shortage_level`: A shortage level on a scale of 0 - 6 that tells us the water shortage state of each agency
+-   `state_standard_shortage_level`: A shortage level on a scale of 0 - 6 that tells us the water shortage state of each agency
 
-This data is presented every month from 2022 to 2024. It will used to show trends in the counties water levels. 
+This data is presented every month from 2022 to 2024. It will used to show trends in the counties water levels.
 
 The variables of interest with the projection dataset (`five_year_shortage`) are:
 
-- `water_use_acre_feet`: projected water used for each agency   
-- `water_supplies_acre_feet`: projected water supply for each agency
-- `benefit_supply_augmentation_acre_feet`: projected supply augmentated (bought) for each agency
-- `benefit_demand_reduction_acre_feet`: projected demand reduced for each agency
+-   `water_use_acre_feet`: projected water used for each agency\
+-   `water_supplies_acre_feet`: projected water supply for each agency
+-   `benefit_supply_augmentation_acre_feet`: projected supply augmentated (bought) for each agency
+-   `benefit_demand_reduction_acre_feet`: projected demand reduced for each agency
 
-These variables are projections reported from individual water agencies during the 2020 Urban Water Management Plan submission. They are representative of the worst consecutive 5 years on average. Each row is an projected observation for years 2021 - 2025 because this data was submitted in 2020. 
+These variables are projections reported from individual water agencies during the 2020 Urban Water Management Plan submission. They are representative of the worst consecutive 5 years on average. Each row is an projected observation for years 2021 - 2025 because this data was submitted in 2020.
 
-### 4. Find at least two data visualizations 
+### 4. Find at least two data visualizations
 
 ![Visualization 1](hw3-photo1.jpg)
 
-This is a great visualization. It really brings home the point that simpler can be better. It has some easy to read information and it drives the point home that there are many people out there that don't have safe drinking water. I think producing something along this line can be affective. Of course, I want to try and produce something with a little more pizzazz as the examples we have seen from class are great. 
+This is a great visualization. It really brings home the point that simpler can be better. It has some easy to read information and it drives the point home that there are many people out there that don't have safe drinking water. I think producing something along this line can be affective. Of course, I want to try and produce something with a little more pizzazz as the examples we have seen from class are great.
 
 ![Visualization 2](hw3-photo2.png)
 
-This is an interesting plot for time series data. makes it has a little more 
+This is an interesting plot for time series data. makes it has a little more
 
 ### 5. Draw anticapated visualizations
 
@@ -61,11 +64,11 @@ This is an interesting plot for time series data. makes it has a little more
 
 ### 6. Mock up visualizations using code
 
-- have your data plotted (if you’re experimenting with a graphic form(s) that was not explicitly covered in class, we understand that this may take some more time to build; you should have as much put together as possible)
-- use appropriate strategies to highlight / focus attention on a clear message
-- include appropriate text such as titles, captions, axis labels
-- experiment with colors and typefaces / fonts
-- create a presentable / aesthetically-pleasing theme (e.g. (re)move gridlines / legends as appropriate, adjust font sizes, etc.)
+-   have your data plotted (if you’re experimenting with a graphic form(s) that was not explicitly covered in class, we understand that this may take some more time to build; you should have as much put together as possible)
+-   use appropriate strategies to highlight / focus attention on a clear message
+-   include appropriate text such as titles, captions, axis labels
+-   experiment with colors and typefaces / fonts
+-   create a presentable / aesthetically-pleasing theme (e.g. (re)move gridlines / legends as appropriate, adjust font sizes, etc.)
 
 Let's code it
 
@@ -79,6 +82,8 @@ library(ggExtra)
 library(tmap)
 library(sf)
 library(janitor)
+library(ggridges)
+library()
 
 # Load data
 water_shortage <- read_csv(here("data", "actual_water_shortage_level.csv"))
@@ -86,9 +91,11 @@ five_year_shortage <- read_csv(here("data", "five_year_water_shortage_outlook.cs
 historical_production <- read_csv(here("data", "historical_production_delivery.csv"))
 ca_counties <- st_read(here("data", "ca_counties", "CA_Counties.shp")) 
 ca_boundary <- st_read(here("data", "ca_state", "CA_State.shp"))
+population <- read_csv(here("data", "population_clean.csv"))
 ```
 
 ### Plot 1
+
 ```{r}
 # Five year data, filter to Ventura and Sacramento County water agencies
 five_filtered <- five_year_shortage %>% 
@@ -140,8 +147,8 @@ ggplot(five_filtered, aes(x = forecast_start_date, y = difference,
   )
 ```
 
-
 ### Plot 2
+
 ```{r}
 # Filter to Ventura and Sacramento County Water agencies
 level_filtered <- water_shortage %>% 
@@ -163,6 +170,7 @@ ggplot(level_filtered, aes(x = month, y = mean_level, fill = county)) +
 ```
 
 ### Plot 3
+
 ```{r}
 
 
@@ -215,7 +223,62 @@ ggplot(historical_filtered_deliver,aes(x = quantity_acre_feet, y = water_type)) 
          geom_col()
 ```
 
+### Date and Water Type Line Plot
+
+```{r}
+# historical_filter2 <- historical_production %>%
+#   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
+#          !is.na(quantity_acre_feet)) %>% 
+#   group_by(org_id, start_date, water_produced_or_delivered, water_type) %>% 
+#   summarise(quantity = sum(quantity_acre_feet)) %>% 
+#   pivot_wider(names_from = water_produced_or_delivered,
+#               values_from = quantity) 
+# 
+# historical_filter2$surplus <- historical_filter2$`water produced` - historical_filter2$`water delivered`
+# 
+# historical_filter2 <- historical_filter %>% 
+#   mutate(county = case_when(
+#     org_id %in% c(376, 2158, 2629, 2631) ~ "Ventura",
+#     org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacremento",
+#     TRUE ~ "other"
+#   )) %>% 
+#   mutate(year = year(start_date)) %>% 
+#   filter(year > 2018) 
+
+
+# Filter and clean data 
+historical_filter2 <- historical_production %>%
+  filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
+         !is.na(quantity_acre_feet)) %>% 
+   group_by(org_id, start_date, water_produced_or_delivered, water_type) %>% 
+  summarise(quantity = sum(quantity_acre_feet)) %>% 
+  mutate(county = case_when(
+    org_id %in% c(376, 2158, 2629, 2631) ~ "Ventura",
+    org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacremento",
+    TRUE ~ "other"
+  )) 
+  
+# Filter to only produced 
+historical_produce <- historical_filter2 %>% 
+  filter(water_produced_or_delivered == "water produced")
+
+# Line plot 
+ggplot(historical_produce, aes(x = start_date, y = quantity, color = water_type)) + geom_line() +
+  facet_wrap(~county) +
+  theme(
+    legend.position = "none"
+  )
+
+
+
+
+# Density plot, giving a weird looking graph 
+# ggplot(historical_produce, aes(x = start_date, group = quantity, fill = water_type)) + geom_density() +
+#   facet_wrap(~county)
+```
+
 ### Map
+
 ```{r}
 ca_counties <- ca_counties %>% 
   clean_names() %>% 
@@ -230,4 +293,3 @@ tm_shape(ca_boundary) +
   tm_shape(ca_counties) +
   tm_polygons(fill = "color")
 ```
-
