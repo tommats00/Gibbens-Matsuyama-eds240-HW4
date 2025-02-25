@@ -2,7 +2,10 @@
 title: "HW2-Exploration"
 subtitle: "Exploration of CalDrought Capstone Data"
 author: "Tom Gibbens-Matsuyama"
-format: html
+date: 2025-02-04
+format:
+  html:
+    embed-resources: true # this ensures that your rendered .html file is self-contained, so instructors can open and view all work
 editor: visual
 editor_options: 
   chunk_output_type: console
@@ -22,13 +25,17 @@ library(here)
 ## Load data
 
 ```{r}
+
+# Metric data
 water_shortage <- read_csv(here("data", "actual_water_shortage_level.csv"))
 five_year_shortage <- read_csv(here("data", "five_year_water_shortage_outlook.csv"))
 historical_production <- read_csv(here("data", "historical_production_delivery.csv"))
 monthly_water_shortage <- read_csv(here("data", "monthly_water_shortage_outlook.csv"))
 source_name <- read_csv(here("data", "source_name.csv"))
-metadata <- read_csv(here("data", "metadata.csv"))
 population <- read_csv(here("data", "population_clean.csv"))
+
+# Metadata
+metadata <- read_csv(here("data", "metadata.csv"))
 five_metadata <- read_csv(here("data", "five_year_outlook_data_dictionary.csv"))
 ```
 
@@ -78,8 +85,6 @@ range(unique(five_year_shortage$forecast_start_date))
 
 range(unique(five_year_shortage$forecast_end_date))
 
-# View NAs for metric data
-is.na(five_year_shortage$water_use_acre_feet)
 ```
 
 #### Creating supply/demand difference column & plotting it
@@ -107,11 +112,12 @@ ggplot(five_year_shortage, aes(supply_demand_diff)) +
 #### Plotting each Org ID's water surplus or shortage
 
 ```{r}
-# Plot Org Id water surplus and shortage 
+# Calculate mean supply/demand diff from the 5 year range
 five_year_group <- five_year_shortage %>% 
   group_by(org_id) %>% 
   summarize(mean_diff = mean(supply_demand_diff)) 
 
+# Plot Org Id water surplus and shortage
 ggplot(five_year_group, aes(x = org_id, y = mean_diff)) +
   geom_point() +
   labs(x = "Org ID", 
@@ -124,13 +130,14 @@ ggplot(five_year_group, aes(x = org_id, y = mean_diff)) +
 
 ```{r}
 # Let's take a look at projections for Goleta
-
+# Filter for Goleta location using ord_id
 five_year_goleta <- five_year_shortage %>% 
   filter(org_id == 1068) %>% 
   pivot_longer(cols = starts_with("water"),
                names_to = "water_use_or_supply",
                values_to = "acre_feet") %>% 
   
+  # Initialize plot
   ggplot(aes(x = forecast_start_date, y = acre_feet, color = water_use_or_supply)) +
   geom_point() +
   geom_line() +
@@ -144,6 +151,7 @@ five_year_goleta
 ### Make a function that plots Org ID surplus and shortage
 
 ```{r}
+# Function that plots surplus and shortage values given Org ID
 surplus_shortage_fun <- function(id){
   five_year_shortage %>% 
     filter(org_id == id) %>% 
@@ -185,6 +193,9 @@ This is by far the biggest DataFrame with over 900,000 observations. Variables o
   
   ggplot(aes(y = quantity_acre_feet, x = water_type, fill = water_produced_or_delivered)) +
   geom_col() +
+  labs(x = "Water Type",
+       y = "Quantity Acre-Feet",
+       title = "Quanitity in acre-feet for produced and delivered water types") +
   coord_flip()
 ```
 
@@ -208,6 +219,7 @@ unique(monthly_dropna$supplier_type)
 # View how many PWSIDs we have
 length(unique(monthly_dropna$pwsid))
 
+# Initialize plot 
 ggplot(monthly_dropna, aes(x = state_standard_shortage_level, y = shortage_surplus_acre_feet)) +
   geom_col()
 ```
