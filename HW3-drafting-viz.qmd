@@ -1,9 +1,15 @@
 ---
 title: "HW3-drafting-viz"
 author: "Tom Gibbens-Matsuyama"
-format: html
+format: 
+  html:
+    embed-resources: true
 editor: visual
 editor_options: 
+execute: 
+  warning: false
+  message: false
+  eval: true
   chunk_output_type: console
 ---
 
@@ -70,8 +76,9 @@ This is an interesting plot for time series data. makes it has a little more
 -   experiment with colors and typefaces / fonts
 -   create a presentable / aesthetically-pleasing theme (e.g. (re)move gridlines / legends as appropriate, adjust font sizes, etc.)
 
-Let's code it
+## Let's code it
 
+### Load libraries
 ```{r}
 # Load libraries
 library(tidyverse)
@@ -83,20 +90,28 @@ library(tmap)
 library(sf)
 library(janitor)
 library(ggridges)
-library()
+```
 
-# Load data
+### Load data
+```{r}
+# Main data
 water_shortage <- read_csv(here("data", "actual_water_shortage_level.csv"))
 five_year_shortage <- read_csv(here("data", "five_year_water_shortage_outlook.csv"))
 historical_production <- read_csv(here("data", "historical_production_delivery.csv"))
+population <- read_csv(here("data", "population_clean.csv"))
+
+# Map boundary data
 ca_counties <- st_read(here("data", "ca_counties", "CA_Counties.shp")) 
 ca_boundary <- st_read(here("data", "ca_state", "CA_State.shp"))
-population <- read_csv(here("data", "population_clean.csv"))
 ```
 
 ### Plot 1
 
+This plot is the water shortage and surplus for both counties
 ```{r}
+#| code-fold: true
+#| code-summary: Show the code
+
 # Five year data, filter to Ventura and Sacramento County water agencies
 five_filtered <- five_year_shortage %>% 
   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130))
@@ -148,14 +163,17 @@ ggplot(five_filtered, aes(x = forecast_start_date, y = difference,
 ```
 
 ### Plot 2
-
+This plot is the water shortage level for both counties
 ```{r}
+#| code-fold: true
+#| code-summary: Show the code
+
 # Filter to Ventura and Sacramento County Water agencies
 level_filtered <- water_shortage %>% 
   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130)) %>% 
   mutate(county = case_when(
-    str_detect(supplier_name, fixed("ventura", ignore_case = TRUE)) ~ "ventura",
-    str_detect(supplier_name, fixed("sacramento", ignore_case = TRUE)) ~ "sacramento",
+    str_detect(supplier_name, fixed("ventura", ignore_case = TRUE)) ~ "Ventura",
+    str_detect(supplier_name, fixed("sacramento", ignore_case = TRUE)) ~ "Sacramento",
     TRUE ~ "other"
   )) %>% 
   filter(!is.na(state_standard_shortage_level)) %>% 
@@ -164,122 +182,68 @@ level_filtered <- water_shortage %>%
   group_by(county, month) %>% 
   summarise(mean_level = mean(state_standard_shortage_level))
 
+
+# Create bar plot
 ggplot(level_filtered, aes(x = month, y = mean_level, fill = county)) +
   geom_col() +
-  facet_wrap(~county)
+  facet_wrap(~county) +
+  labs(x = "Month",
+       y = "Mean Shortage Level")
 ```
 
-### Plot 3
-
+### Plot 3: Date and Water Type Line Plot
+This plot is the quantity of water types that each county produces. 
 ```{r}
+#| code-fold: true
+#| code-summary: Show the code
 
-
-historical_filter <- historical_production %>%
-  filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
-         !is.na(quantity_acre_feet)) %>% 
-  group_by(org_id, start_date, water_produced_or_delivered) %>% 
-  summarise(quantity = sum(quantity_acre_feet)) %>% 
-  pivot_wider(names_from = water_produced_or_delivered,
-              values_from = quantity) 
-
-historical_filter$surplus <- historical_filter$`water produced` - historical_filter$`water delivered`
-
-historical_filter <- historical_filter %>% 
-  mutate(county = case_when(
-    org_id %in% c(376, 2158, 2629, 2631) ~ "Ventura",
-    org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacremento",
-    TRUE ~ "other"
-  )) %>% 
-  mutate(year = year(start_date)) %>% 
-  filter(year > 2018)
-
-ggplot(historical_filter, aes(x = start_date, y = surplus, color = county)) +
-  geom_line()
-
-
-
-
-historical_filtered_prod <- historical_production %>% 
-  filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
-         !is.na(quantity_acre_feet),
-         water_produced_or_delivered == "water produced") 
-
-historical_filtered_deliver <- historical_production %>% 
-  filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
-         !is.na(quantity_acre_feet),
-         water_produced_or_delivered == "water delivered") 
-
-
-
-
-
-
-
-
-ggplot(historical_filtered_prod,aes(x = quantity_acre_feet, y = water_type, fill = )) +
-         geom_col()
-
-ggplot(historical_filtered_deliver,aes(x = quantity_acre_feet, y = water_type)) +
-         geom_col()
-```
-
-### Date and Water Type Line Plot
-
-```{r}
-# historical_filter2 <- historical_production %>%
-#   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
-#          !is.na(quantity_acre_feet)) %>% 
-#   group_by(org_id, start_date, water_produced_or_delivered, water_type) %>% 
-#   summarise(quantity = sum(quantity_acre_feet)) %>% 
-#   pivot_wider(names_from = water_produced_or_delivered,
-#               values_from = quantity) 
-# 
-# historical_filter2$surplus <- historical_filter2$`water produced` - historical_filter2$`water delivered`
-# 
-# historical_filter2 <- historical_filter %>% 
-#   mutate(county = case_when(
-#     org_id %in% c(376, 2158, 2629, 2631) ~ "Ventura",
-#     org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacremento",
-#     TRUE ~ "other"
-#   )) %>% 
-#   mutate(year = year(start_date)) %>% 
-#   filter(year > 2018) 
-
-
-# Filter and clean data 
+# Filter data to 
 historical_filter2 <- historical_production %>%
   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
-         !is.na(quantity_acre_feet)) %>% 
-   group_by(org_id, start_date, water_produced_or_delivered, water_type) %>% 
-  summarise(quantity = sum(quantity_acre_feet)) %>% 
-  mutate(county = case_when(
+         !is.na(quantity_acre_feet),
+         water_produced_or_delivered == "water produced",
+         !water_type %in% c("non-potable (total excluded recycled)", "non-potable water sold to another pws")) %>%
+    mutate(county = case_when(
     org_id %in% c(376, 2158, 2629, 2631) ~ "Ventura",
     org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacremento",
     TRUE ~ "other"
-  )) 
+  )) %>%
+  group_by(start_date, water_produced_or_delivered, water_type, county) %>% 
+  summarise(quantity = sum(quantity_acre_feet)) %>% 
+  ungroup() %>% 
+  mutate(year = year(start_date)) %>% 
+  group_by(year, county, water_type) %>% 
+  summarise(quantity = sum(quantity)) %>% 
+  group_by(year, county) %>% 
+  mutate(total_quantity = sum(quantity),
+         proportion = quantity / total_quantity) %>% 
+  ungroup()
   
-# Filter to only produced 
-historical_produce <- historical_filter2 %>% 
-  filter(water_produced_or_delivered == "water produced")
-
-# Line plot 
-ggplot(historical_produce, aes(x = start_date, y = quantity, color = water_type)) + geom_line() +
-  facet_wrap(~county) +
+# Area plot for proportions
+ggplot(historical_filter2, aes(x = year, y = proportion, fill = water_type)) + 
+  geom_area() +
+  facet_wrap(~county, scales = "free") +
+  scale_x_continuous(limits = c(2013, 2022)) +
+  labs(x = "Year",
+       y = "Water Quantity (Acre-Feet)") 
   theme(
     legend.position = "none"
   )
 
+# Area plot for total quantity 
+ggplot(historical_filter2, aes(x = year, y = quantity, fill = water_type)) + 
+  geom_area() +
+  facet_wrap(~county, scales = "free")
 
-
-
-# Density plot, giving a weird looking graph 
-# ggplot(historical_produce, aes(x = start_date, group = quantity, fill = water_type)) + geom_density() +
-#   facet_wrap(~county)
 ```
+
 
 ### Map
 
 ```{r}
+#| code-fold: true
+#| code-summary: Show the code
+
 ca_counties <- ca_counties %>% 
   clean_names() %>% 
   mutate(color = case_when(
@@ -293,3 +257,16 @@ tm_shape(ca_boundary) +
   tm_shape(ca_counties) +
   tm_polygons(fill = "color")
 ```
+
+### 7. 
+
+a. What challenges did you encounter or anticipate encountering as you continue to build / iterate on your visualizations in R? If you struggled with mocking up any of your three visualizations (from #6, above), describe those challenges here.
+
+I had some trouble with the data wrangling part of this. I changed my question from my previous assignments and had to start over. The wrangling took me some time. Unfortunately, it doesn't look like I did much because my outputs are so ugly. The line graph that I originally drawn on my sketch is not how I pictured it. First, I switch it from a line graph to an area plot. I am not sure as to which one is better as I am not a fan of either. The tough part is that I am comparing two counties so I needed to facet the plot. I need to figure out a way to make this presentable on an infographic. I planned on having the bar plot pop up on the map as a single bar, but I don't think that would do much. Even the one I have now is not very informative. On the sketch, I wanted to have the projected shortage percentage for both on the bottom, but neither has shortage from their projections.
+
+b. What ggplot extension tools / packages do you need to use to build your visualizations? Are there any that we haven’t covered in class that you’ll be learning how to use for your visualizations?
+
+Everything I've done is from class. I wanted to make a streamgraph from the streamgraph library but I was running into some issues. I scratched it and just used an area plot instead. 
+
+c. What feedback do you need from the instructional team and / or your peers to ensure that your intended message is clear?
+The question I want to answer is which county is at greater risk of drought? From the data presented, I am not sure if I am able to answer this question. Having shortage levels and projections can tell us some information but does it really answer this question? The one take away from the area plot Ventura buys a lot of its water, so maybe I could trace it back to the source.
