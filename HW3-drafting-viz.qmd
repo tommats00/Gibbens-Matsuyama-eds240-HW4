@@ -190,11 +190,16 @@ level_filtered <- water_shortage %>%
 
 
 # Create bar plot
-ggplot(level_filtered, aes(x = year, y = mean_level, fill = county)) +
+vent_sac_bar <- ggplot(level_filtered, aes(x = year, y = mean_level, fill = county)) +
   geom_col() +
   facet_wrap(~county) +
-  labs(x = "Month",
-       y = "Mean Shortage Level")
+  labs(x = "Year",
+       y = "Mean Shortage Level") +
+  scale_fill_manual(values = c("Ventura" = "#DABB8E", "Sacramento" = "#B98B6D"),
+                    name = "County") +
+  theme_minimal()
+
+ggsave("sac_ventura.png", plot = vent_sac_bar, width = 10, height = 10, dpi = 300)
 ```
 
 ### Plot 3: Date and Water Type Line Plot
@@ -255,9 +260,9 @@ ggplot(historical_filter2, aes(x = year, y = quantity, fill = water_type)) +
 ca_counties <- ca_counties %>% 
   clean_names() %>% 
   mutate(color = case_when(
-    name == "Ventura" ~ "lightblue",
-    name == "Sacramento" ~ "lightblue",
-    TRUE ~ "grey"
+    name == "Ventura" ~ "#DABB8E",
+    name == "Sacramento" ~ "#B98B6D",
+    TRUE ~ "white"
   ))
 
 # Filter Source data 
@@ -274,12 +279,13 @@ ca_counties <- ca_counties %>%
 # source_sf <- st_transform(source_sf, crs = st_crs(ca_counties))
 
 # Plot our map
-tm_shape(ca_boundary) +
+cali_map <- tm_shape(ca_boundary) +
   tm_borders() +
     tm_shape(ca_counties) +
-  tm_polygons(col = "color") 
-  # tm_shape(source_sf) +
-  # tm_dots()
+  tm_polygons(fill = "color") +
+  tm_layout(frame = FALSE)
+
+ggsave("cali_map.png", plot = cali_map, width = 10, height = 10, dpi = 300)
 ```
 
 ### 7.
