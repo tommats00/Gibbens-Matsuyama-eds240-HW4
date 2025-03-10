@@ -70,7 +70,7 @@ This is an interesting plot for time series data. makes it has a little more
 
 ### 6. Mock up visualizations using code
 
--   have your data plotted (if you’re experimenting with a graphic form(s) that was not explicitly covered in class, we understand that this may take some more time to build; you should have as much put together as possible)
+-   have your data plotted (if you're experimenting with a graphic form(s) that was not explicitly covered in class, we understand that this may take some more time to build; you should have as much put together as possible)
 -   use appropriate strategies to highlight / focus attention on a clear message
 -   include appropriate text such as titles, captions, axis labels
 -   experiment with colors and typefaces / fonts
@@ -190,14 +190,21 @@ level_filtered <- water_shortage %>%
 
 
 # Create bar plot
-vent_sac_bar <- ggplot(level_filtered, aes(x = year, y = mean_level, fill = county)) +
+vent_sac_bar <- ggplot(level_filtered, aes(x = year, y = mean_level, alpha = mean_level, fill = county)) +
   geom_col() +
   facet_wrap(~county) +
   labs(x = "Year",
        y = "Mean Shortage Level") +
-  scale_fill_manual(values = c("Ventura" = "#DABB8E", "Sacramento" = "#B98B6D"),
+ # scale_fill_manual(values = c("#00294D")) +
+  scale_fill_manual(values = c("Ventura" = "#00365B", "Sacramento" = "#00365B"),
                     name = "County") +
-  theme_minimal()
+  scale_alpha_continuous(range = c(1 , 0.5)) +
+  #scale_fill_gradient(low = "#56311C", high = "#DABB8E") +
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ggsave("sac_ventura.png", plot = vent_sac_bar, width = 10, height = 10, dpi = 300)
 ```
@@ -215,7 +222,7 @@ historical_filter2 <- historical_production %>%
   filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130),
          !is.na(quantity_acre_feet),
          water_produced_or_delivered == "water produced",
-         !water_type %in% c("non-potable (total excluded recycled)", "non-potable water sold to another pws")) %>%
+         !water_type %in% c("non-potable (total excluded recycled)", "non-potable water sold to another pws", "sold to another pws")) %>%
     mutate(county = case_when(
     org_id %in% c(376, 2158, 2629, 2631) ~ "Ventura",
     org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacremento",
@@ -233,21 +240,32 @@ historical_filter2 <- historical_production %>%
   ungroup()
   
 # Area plot for proportions
-ggplot(historical_filter2, aes(x = year, y = proportion, fill = water_type)) + 
+area_plot <- ggplot(historical_filter2, aes(x = year, y = proportion, fill = water_type)) + 
   geom_area() +
-  facet_wrap(~county, scales = "free") +
-  scale_x_continuous(limits = c(2013, 2022)) +
+  facet_wrap(~county, scales = "free", ncol = 1) +
+  scale_x_continuous(breaks = 2013:2022) +
+  scale_fill_manual(values = c("#DABB8E", "#0D652C", "#6D4700", "#1C6FAE")) +
   labs(x = "Year",
-       y = "Water Quantity (Acre-Feet)") 
+       y = element_blank()) +
+  theme_minimal() +
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(1.6)),
+    axis.text.y = element_text(size = rel(1.6))
   )
 
 # Area plot for total quantity 
 ggplot(historical_filter2, aes(x = year, y = quantity, fill = water_type)) + 
   geom_area() +
-  facet_wrap(~county, scales = "free")
+  facet_wrap(~county, scales = "free") +
+    scale_x_continuous(breaks = 2013:2022) +
+  labs(x = "Year",
+       y = "Water Quantity (Acre-Feet)") +
+  theme(
+    legend.position = "none"
+  )
 
+ggsave("area_plot.png", plot = area_plot, width = 10, height = 10, dpi = 300)
 ```
 
 ### Map
@@ -260,9 +278,9 @@ ggplot(historical_filter2, aes(x = year, y = quantity, fill = water_type)) +
 ca_counties <- ca_counties %>% 
   clean_names() %>% 
   mutate(color = case_when(
-    name == "Ventura" ~ "#DABB8E",
-    name == "Sacramento" ~ "#B98B6D",
-    TRUE ~ "white"
+    name == "Ventura" ~ "#1C6FAE",
+    name == "Sacramento" ~ "#1C6FAE",
+    TRUE ~ "#DABB8E"
   ))
 
 # Filter Source data 
@@ -285,7 +303,7 @@ cali_map <- tm_shape(ca_boundary) +
   tm_polygons(fill = "color") +
   tm_layout(frame = FALSE)
 
-ggsave("cali_map.png", plot = cali_map, width = 10, height = 10, dpi = 300)
+tmap_save(cali_map, "cali_map.png", width = 10, height = 10, dpi = 300, bg = "transparent")
 ```
 
 ### 7.
@@ -294,7 +312,7 @@ a.  What challenges did you encounter or anticipate encountering as you continue
 
 I had some trouble with the data wrangling part of this. I changed my question from my previous assignments and had to start over. The wrangling took me some time. Unfortunately, it doesn't look like I did much because my outputs are so ugly. The line graph that I originally drawn on my sketch is not how I pictured it. First, I switch it from a line graph to an area plot. I am not sure as to which one is better as I am not a fan of either. The tough part is that I am comparing two counties so I needed to facet the plot. I need to figure out a way to make this presentable on an infographic. I planned on having the bar plot pop up on the map as a single bar, but I don't think that would do much. Even the one I have now is not very informative. On the sketch, I wanted to have the projected shortage percentage for both on the bottom, but neither has shortage from their projections.
 
-b.  What ggplot extension tools / packages do you need to use to build your visualizations? Are there any that we haven’t covered in class that you’ll be learning how to use for your visualizations?
+b.  What ggplot extension tools / packages do you need to use to build your visualizations? Are there any that we haven't covered in class that you'll be learning how to use for your visualizations?
 
 Everything I've done is from class. I wanted to make a streamgraph from the streamgraph library but I was running into some issues. I scratched it and just used an area plot instead.
 
