@@ -189,6 +189,61 @@ level_filtered <- water_shortage %>%
   group_by(county, year) %>% 
   summarise(mean_level = mean(state_standard_shortage_level))
 
+vent_level <- level_filtered %>% 
+  filter(county == "Ventura")
+
+sac_level <- level_filtered %>% 
+  filter(county == "Sacramento")
+  
+
+ggplot(vent_level, aes(x = year, y = mean_level)) +
+  geom_col(fill = "#8EBFDA") +
+  labs(x = element_blank(),
+       y = element_blank(),
+       title = "Ventura") +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    #plot.title = element_text(colour = "#8EBFDA", size = 1.5),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(1.6)),
+    axis.text.y = element_text(size = rel(1.6)),
+    plot.background = element_rect(fill = "#02042C"),
+    #axis.ticks.x = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text.x.bottom = element_text(color = "#8EBFDA"),
+    axis.text.y.left = element_text(color = "#8EBFDA"),
+    panel.grid = element_blank(),
+    legend.text = element_text(color = "#8EBFDA"),
+    legend.title = element_blank(),
+  ) +
+  coord_flip()
+
+
+ggplot(sac_level, aes(x = year, y = mean_level)) +
+  geom_col(fill = "#8EBFDA") +
+  labs(x = element_blank(),
+       y = element_blank(),
+       title = "Ventura") +
+  scale_y_continuous(breaks = c(0, 0.5, 1, 1.5, 2, 2.5),
+                     limits = c(0, 2.5)) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    #plot.title = element_text(colour = "#8EBFDA", size = 1.5),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(1.6)),
+    axis.text.y = element_text(size = rel(1.6)),
+    plot.background = element_rect(fill = "#02042C"),
+    #axis.ticks.x = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text.x.bottom = element_text(color = "#8EBFDA"),
+    axis.text.y.left = element_text(color = "#8EBFDA"),
+    panel.grid = element_blank(),
+    legend.text = element_text(color = "#8EBFDA"),
+    legend.title = element_blank(),
+  ) +
+  coord_flip()
+
+
 
 # Create bar plot
 vent_sac_bar <- ggplot(level_filtered, aes(x = year, y = mean_level, alpha = mean_level, fill = county)) +
