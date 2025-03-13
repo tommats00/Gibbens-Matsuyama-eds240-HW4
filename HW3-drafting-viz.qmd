@@ -265,6 +265,83 @@ vent_sac_bar <- ggplot(level_filtered, aes(x = year, y = mean_level, alpha = mea
 ggsave("sac_ventura.png", plot = vent_sac_bar, width = 10, height = 10, dpi = 300)
 ```
 
+### Tile plot for shortage level
+
+```{r}
+level_month <- water_shortage %>% 
+  filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130)) %>% 
+  mutate(county = case_when(
+    str_detect(supplier_name, fixed("ventura", ignore_case = TRUE)) ~ "Ventura",
+    str_detect(supplier_name, fixed("sacramento", ignore_case = TRUE)) ~ "Sacramento",
+    TRUE ~ "other"
+  )) %>% 
+  filter(!is.na(state_standard_shortage_level)) %>% 
+  mutate(year = year(start_date),
+         month = month(start_date)) %>% 
+  group_by(county, year, month) %>% 
+  summarise(mean_level = mean(state_standard_shortage_level))
+
+
+
+vent_level_month <- level_month %>% 
+  filter(county == "Ventura")
+
+sac_level_month <- level_month %>% 
+  filter(county == "Sacramento")
+
+
+
+
+
+
+vent_monthly <- ggplot(vent_level_month, aes(x = factor(month), y = factor(year), fill = mean_level)) +
+  geom_tile() +
+  geom_text(aes(label = round(mean_level, 1)), color = "white", size = 8) +
+  scale_x_discrete(name = "month", labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec")) +
+  scale_fill_continuous(low = "#01665D", high = "#8C6009") +
+  coord_fixed(ratio = 1) +  # Make tiles square
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 30, colour = "#8EBFDA"),  # Rotate x-axis labels for better readability
+    axis.title.x = element_blank(),  # Remove x-axis title
+    axis.title.y = element_blank(),  # Remove y-axis title
+    axis.text.y = element_text(size = 30, color = "#8EBFDA"),  # Adjust size of y-axis labels if needed
+    axis.ticks = element_blank(),  # Remove axis ticks
+    panel.grid = element_blank(),  # Remove gridlines
+    panel.background = element_blank(),
+    plot.background = element_rect(fill  = "#02042C"),
+    plot.margin = margin(0,0,0,0),
+    legend.position = "none"
+  )
+
+
+ggsave("vent_monthly.pdf", plot = vent_monthly, width = 18, height = 9, dpi = 300 )
+```
+
+```{r}
+sac_monthly <- ggplot(sac_level_month, aes(x = factor(month), y = factor(year), fill = mean_level)) +
+  geom_tile() +
+  geom_text(aes(label = round(mean_level, 1)), color = "white", size = 8) +
+  scale_x_discrete(name = "month", labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec")) +
+  scale_fill_continuous(low = "#01665D", high = "#8C6009") +
+  coord_fixed(ratio = 1) +  # Make tiles square
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 30, colour = "#8EBFDA"),  # Rotate x-axis labels for better readability
+    axis.title.x = element_blank(),  # Remove x-axis title
+    axis.title.y = element_blank(),  # Remove y-axis title
+    axis.text.y = element_text(size = 30, color = "#8EBFDA"),  # Adjust size of y-axis labels if needed
+    axis.ticks = element_blank(),  # Remove axis ticks
+    panel.grid = element_blank(),  # Remove gridlines
+    panel.background = element_blank(),
+    plot.background = element_rect(fill  = "#02042C"),
+    plot.margin = margin(0,0,0,0),
+    legend.position = "none"
+  )
+
+ggsave("sac_monthly.pdf", plot = sac_monthly, width = 18, height = 9, dpi = 300)
+```
+
 ### Plot 3: Date and Water Type Line Plot
 
 This plot is the quantity of water types that each county produces.
@@ -292,7 +369,8 @@ historical_filter2 <- historical_production %>%
   summarise(quantity = sum(quantity)) %>% 
   group_by(year, county) %>% 
   mutate(total_quantity = sum(quantity),
-         proportion = quantity / total_quantity) %>% 
+         proportion = quantity / total_quantity,
+         percentage = proportion * 100) %>% 
   ungroup()
   
 # Area plot for proportions
@@ -526,6 +604,7 @@ area_sac <- ggplot(hist_sac, aes(x = year, y = percent, fill = water_type)) +
   geom_area() +
   facet_wrap(~county, scales = "free", ncol = 1) +
   scale_x_continuous(breaks = c(2013,2022)) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
   scale_fill_manual(values = c("#8EBFDA", "#1F71D8", "#00CEBC", "#1C3698")) +
   labs(x = element_blank(),
        y = element_blank()) +
@@ -570,6 +649,40 @@ area_ventura <- ggplot(hist_ventura, aes(x = year, y = percent, fill = water_typ
     
     #panel.background = 
   )
+```
+
+### Combination of both plots
+
+```{r}
+sac_vent_plot <- ggplot(historical_filter2, aes(x = year, y = percentage, fill = water_type)) + 
+  geom_area() +
+  facet_wrap(~county, scales = "free") +
+  scale_x_continuous(breaks = c(2013,2022)) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) + 
+  scale_fill_manual(values = c("#8EBFDA", "#1F71D8", "#00CEBC", "#1C3698"),
+                    labels = c("groundwater wells" = "Ground Water",
+                               "purchased or received from another pws" = "Purchased", 
+                               "recycled" = "Recycled",
+                               "surface water" = "Surface Water")) +
+  labs(x = element_blank(),
+       y = element_blank()) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    aspect.ratio = 0.5,
+    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(2.5)),
+    axis.text.y = element_text(size = rel(2.5)),
+    plot.background = element_rect(fill = "#02042C"),
+    #axis.ticks.x = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text.x.bottom = element_text(color = "#8EBFDA"),
+    axis.text.y.left = element_text(color = "#8EBFDA"),
+    panel.grid = element_blank(),
+    legend.text = element_text(color = "#8EBFDA"),
+    legend.title = element_blank()
+  ) 
+
+ggsave("sac_vent_plot.pdf", plot = sac_vent_plot, width = 18, height = 9, dpi = 300)
 ```
 
 ### 7.
