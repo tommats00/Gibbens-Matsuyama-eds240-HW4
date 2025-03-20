@@ -12,26 +12,26 @@ execute:
 
 ### Part 1: Introduction
 
-California is a diverse and beautiful state, however, it suffers from long periods of drought. Water is the most essential nutrient and unfortunately, it can be one of the most scarce. Understanding the distribution of water throughout the state is a key factor in assessing California's resiliency to drought. The data described in this analysis comes from the Department of Water Resources and the State Water Resources Control Board. It has been recently compiled by the California Water Data Consortium and posted on the California Natural Resource Agency Portal for open accessibility. From this data, I was interested in assessing the availability and allocation of water resources throughout districts. In order to craft an interesting and engaging infographic for the viewer, I had I decided to choose a comparison between two counties, Sacramento and Ventura. Initially, I wanted to compare counties more north and south of the ones chosen, however these were contained a significant amount of data for analysis. 
+California is a diverse and beautiful state, however, it suffers from long periods of drought. Water is the most essential nutrient and unfortunately, it can be one of the most scarce. Understanding the distribution of water throughout the state is a key factor in assessing California's resiliency to drought. The data described in this analysis comes from the Department of Water Resources and the State Water Resources Control Board. It has been recently compiled by the California Water Data Consortium and posted on the California Natural Resource Agency Portal for open accessibility. From this data, I was interested in assessing the availability and allocation of water resources throughout districts. In order to craft an interesting and engaging infographic for the viewer, I had I decided to choose a comparison between two counties, Sacramento and Ventura. Initially, I wanted to compare counties more north and south of the ones chosen, however these were contained a significant amount of data for analysis.
 
 ### Part 2: Infographic
 
 ![Infographic](EDS240-infographic-5.jpg)
 
-### Part 3: Body 
+### Part 3: Body
 
-When creating any type of visualization, it is important to follow the 10 design elements. These elements were implemented into my visualization by the following: 
+When creating any type of visualization, it is important to follow the 10 design elements. These elements were implemented into my visualization by the following:
 
-- Graphic Form: One of the most essential questions for creating an infographic is: what type of graphic form should I use? My infographic contains more of a basic graphic form. I created a heatmap, barplot, and an area plot. The only one that has a little twist is that my barplot is actually represented by the county I am referring to, with the shading representing the amount of water shortage that county experienced during 2022. 
-- Text: The text of all my plots most definitely had to be tampered with. There is a major difference of what text looks like in R and when you export that plot. Everything may look great in R, but may look entirely different in another software such as Affinity. I had to do a lot of changing and exporting of my plots until I found the variations that I liked the most. 
-- Themes: The process of creating my themes were similar to that of the text. I had to make a lot of small changes before I was satisfied. For my infographic, I wanted to make minimalistic plots for the reader to easily interpret my data. If I needed to add anything such as notations to the plot, I wanted to do that in Affinity. To create, a minimalistic plot, I had to add a several arguments to the themes. 
-- Color: I went back and forth on the color of my plots and the overall infographic. I initially wanted to do a tan color to represent a dry desert but shifted towards shades of blue to represent water. I was then told it might be good to add some contrast to my infographic, so I changed some of the blue colors to orange. 
-- Typography: The typography of my infographic was standard as there was no changes needed because I wanted to keep a professional tone. 
-- General Design: I put my figures and text inside rounded rectangles to add distinction within the visualization. It can be easy to get cluttered, so I wanted to define the differences between my information. 
-- Contextualizing the data: I added annotations that was linked to the proper data through use of arrows and color coordination. 
-- Centering the primary message: The primary question was made clear by putting it at the type in big text. The main message I tried highlighting in the color orange which contrasted with the blues.
-- Considering accessibility: I beleive that there is enough contrast in the colors so those that are colorblind may easily read the information present. The orange color pops on the dark blue and I think the contrast of light and dark blue is easy to read. 
-- DEI Lens: My DEI lens focused on creating an accessible visualization for everyone by implementation of colors and design. I wanted to be inclusive of those that are colorblind. If this project narrowed down to individual communities, then I could incorporate data that was representative of these communities.
+-   Graphic Form: One of the most essential questions for creating an infographic is: what type of graphic form should I use? My infographic contains more of a basic graphic form. I created a heatmap, barplot, and an area plot. The only one that has a little twist is that my barplot is actually represented by the county I am referring to, with the shading representing the amount of water shortage that county experienced during 2022.
+-   Text: The text of all my plots most definitely had to be tampered with. There is a major difference of what text looks like in R and when you export that plot. Everything may look great in R, but may look entirely different in another software such as Affinity. I had to do a lot of changing and exporting of my plots until I found the variations that I liked the most.
+-   Themes: The process of creating my themes were similar to that of the text. I had to make a lot of small changes before I was satisfied. For my infographic, I wanted to make minimalistic plots for the reader to easily interpret my data. If I needed to add anything such as notations to the plot, I wanted to do that in Affinity. To create, a minimalistic plot, I had to add a several arguments to the themes.
+-   Color: I went back and forth on the color of my plots and the overall infographic. I initially wanted to do a tan color to represent a dry desert but shifted towards shades of blue to represent water. I was then told it might be good to add some contrast to my infographic, so I changed some of the blue colors to orange.
+-   Typography: The typography of my infographic was standard as there was no changes needed because I wanted to keep a professional tone.
+-   General Design: I put my figures and text inside rounded rectangles to add distinction within the visualization. It can be easy to get cluttered, so I wanted to define the differences between my information.
+-   Contextualizing the data: I added annotations that was linked to the proper data through use of arrows and color coordination.
+-   Centering the primary message: The primary question was made clear by putting it at the type in big text. The main message I tried highlighting in the color orange which contrasted with the blues.
+-   Considering accessibility: I beleive that there is enough contrast in the colors so those that are colorblind may easily read the information present. The orange color pops on the dark blue and I think the contrast of light and dark blue is easy to read.
+-   DEI Lens: My DEI lens focused on creating an accessible visualization for everyone by implementation of colors and design. I wanted to be inclusive of those that are colorblind. If this project narrowed down to individual communities, then I could incorporate data that was representative of these communities.
 
 #### Code used to create my infographic
 
@@ -419,3 +419,39 @@ area_ventura <- ggplot(hist_ventura, aes(x = year, y = percent, fill = water_typ
   )
 ```
 
+```{r}
+#| code-fold: true
+#| code-summary: Show the code
+
+# Filter data to 
+historical_filter2 <- historical_production %>%
+  filter(org_id %in% c(376, 2158, 2629, 2631, 372, 2132, 2140, 2683, 2130, 495, 1057, 890, 2469, 433),
+         !is.na(quantity_acre_feet),
+         water_produced_or_delivered == "water produced",
+         !water_type %in% c("non-potable (total excluded recycled)", "non-potable water sold to another pws", "sold to another pws")) %>%
+    mutate(county = case_when(
+    org_id %in% c(376, 2158, 2629, 2631, 495, 1057, 890, 2469, 433) ~ "Ventura",
+    org_id %in% c(372, 2132, 2140, 2683, 2130) ~ "Sacramento",
+    TRUE ~ "other"
+  )) %>%
+  group_by(start_date, water_produced_or_delivered, water_type, county) %>% 
+  summarise(quantity = sum(quantity_acre_feet)) %>% 
+  ungroup() %>% 
+  mutate(year = year(start_date)) %>% 
+  group_by(year, county, water_type) %>% 
+  summarise(quantity = sum(quantity)) %>% 
+  group_by(year, county) %>% 
+  mutate(total_quantity = sum(quantity),
+         proportion = quantity / total_quantity,
+         percentage = proportion * 100) %>% 
+  ungroup()
+
+proportions_2024 <- historical_filter2 %>% 
+  filter(year == 2022) %>% 
+  group_by(county, water_type) %>% 
+  summarise(quantity) %>% 
+  ungroup() %>% 
+  group_by(county) %>% 
+  mutate(percentage = quantity / sum(quantity) * 100) %>% 
+  ungroup()
+```
