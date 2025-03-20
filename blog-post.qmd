@@ -18,11 +18,12 @@ California is a diverse and beautiful state, however, it suffers from long perio
 
 ![Infographic](EDS240-infographic-5.jpg)
 
-<<<<<<< Updated upstream
+
 ### Part 3: Body
-=======
+
+
 ### Part 3: Design Elements
->>>>>>> Stashed changes
+
 
 When creating any type of visualization, it is important to follow the 10 design elements. These elements were implemented into my visualization by the following:
 
@@ -125,13 +126,14 @@ vent_monthly <- ggplot(vent_level_month, aes(x = factor(month), y = factor(year)
   geom_text(aes(label = round(mean_level, 1)), color = "white", size = 8) +
   
   # Changes the months from numbers to their abbreviations for x-axis
-  scale_x_discrete(name = "month", labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec")) +
+  scale_x_discrete(name = "month", labels = c("1" = "J", "2" = "F", "3" = "M", "4" = "A", "5" = "M", "6" = "J", "7" = "J", "8" = "A", "9" = "S", "10" = "O", "11" = "N", "12" = "D")) +
   
   # Color range for the values
-  scale_fill_continuous(low = "#01665D", high = "#8C6009") +
+  scale_fill_continuous(low = "#01665D", high = "#8C6009", limits = c(0, 3)) +
   
   # Add title
-  labs(title = "Ventura County Monthly Shortage Levels") +
+  labs(title = "Monthly Shortage Levels",
+       fill = "Mean Shortage Level") +
   
   # Fix the tiles to be squares 
   coord_fixed(ratio = 1) + 
@@ -139,8 +141,8 @@ vent_monthly <- ggplot(vent_level_month, aes(x = factor(month), y = factor(year)
   # Theme for image export 
   theme_minimal() +
   theme(
-    plot.title = element_text(size = rel(3.5), color = "#8EBFDA", hjust = 0.5),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(5), colour = "#8EBFDA"),  # Rotate x-axis labels for better readability
+    plot.title = element_text(size = rel(6), color = "#8EBFDA", hjust = 0.5),
+    axis.text.x = element_text(hjust = 1, size = rel(5), colour = "#8EBFDA"),  # Rotate x-axis labels for better readability
     axis.title.x = element_blank(),  # Remove x-axis title
     axis.title.y = element_blank(),  # Remove y-axis title
     axis.text.y = element_text(size = rel(5), color = "#8EBFDA"),  # Adjust size of y-axis labels if needed
@@ -149,7 +151,11 @@ vent_monthly <- ggplot(vent_level_month, aes(x = factor(month), y = factor(year)
     panel.background = element_blank(),
     plot.background = element_rect(fill  = "#02042C"),
     plot.margin = margin(0,0,0,0),
-    legend.position = "none"
+    legend.position = "bottom",
+    legend.key.height = unit(1, "cm"),  # Elongate the gradient (height)
+    legend.key.width = unit(3, "cm"),   # Elongate the gradient (width)
+    legend.text = element_text(size = rel(2), color = "#8EBFDA"),
+    legend.title = element_text(size = rel(3), color = "#8EBFDA", vjust = 1)
   )
 
 
@@ -162,13 +168,14 @@ sac_monthly <- ggplot(sac_level_month, aes(x = factor(month), y = factor(year), 
   geom_text(aes(label = round(mean_level, 1)), color = "white", size = 8) +
   
    # Changes the months from numbers to their abbreviations for x-axis
-  scale_x_discrete(name = "month", labels = c("1" = "Jan", "2" = "Feb", "3" = "Mar", "4" = "Apr", "5" = "May", "6" = "Jun", "7" = "Jul", "8" = "Aug", "9" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec")) +
+  scale_x_discrete(name = "month", labels = c("1" = "J", "2" = "F", "3" = "M", "4" = "A", "5" = "M", "6" = "J", "7" = "J", "8" = "A", "9" = "S", "10" = "O", "11" = "N", "12" = "D")) +
   
   # Color range for the values
-  scale_fill_continuous(low = "#01665D", high = "#8C6009") +
+  scale_fill_continuous(low = "#01665D", high = "#8C6009", limits = c(0, 3)) +
   
   # Add title
-  labs(title = "Sacramento County Monthly Shortage Levels") +
+  labs(title = "Monthly Shortage Levels",
+       fill = "Mean Shortage Level") +
   
   # Fix the tiles to be squares
   coord_fixed(ratio = 1) +  # Make tiles square
@@ -176,8 +183,8 @@ sac_monthly <- ggplot(sac_level_month, aes(x = factor(month), y = factor(year), 
   # Theme for image export 
   theme_minimal() +
   theme(
-    plot.title = element_text(size = rel(3.5), color = "#8EBFDA", hjust = 0.5),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(5), colour = "#8EBFDA"),  # Rotate x-axis labels for better readability
+    plot.title = element_text(size = rel(6), color = "#8EBFDA", hjust = 0.5),
+    axis.text.x = element_text(hjust = 1, size = rel(5), colour = "#8EBFDA"),  # Rotate x-axis labels for better readability
     axis.title.x = element_blank(),  # Remove x-axis title
     axis.title.y = element_blank(),  # Remove y-axis title
     axis.text.y = element_text(size = rel(5), color = "#8EBFDA"),  # Adjust size of y-axis labels if needed
@@ -186,8 +193,16 @@ sac_monthly <- ggplot(sac_level_month, aes(x = factor(month), y = factor(year), 
     panel.background = element_blank(),
     plot.background = element_rect(fill  = "#02042C"),
     plot.margin = margin(0,0,0,0),
-    legend.position = "none"
+    legend.position = "bottom",
+    legend.key.height = unit(1, "cm"),  # Elongate the gradient (height)
+    legend.key.width = unit(3, "cm"),   # Elongate the gradient (width)
+    legend.text = element_text(size = rel(2), color = "#8EBFDA"),
+    legend.title = element_text(size = rel(3), color = "#8EBFDA", vjust = 1)
   )
+
+ggsave("sac_monthly.pdf", plot = sac_monthly, width = 18, height = 9, dpi = 300)
+
+ggsave("vent_monthly.pdf", plot = vent_monthly, width = 18, height = 9, dpi = 300)
 ```
 
 #### Creating the map from the geospatial data
@@ -305,7 +320,6 @@ hist_sac <- historical_production %>%
 # Plot 
 area_sac <- ggplot(hist_sac, aes(x = year, y = percent, fill = water_type)) + 
   geom_area() +
-  facet_wrap(~county, scales = "free", ncol = 1) +
   
   # Minimlize x-axis scale 
   scale_x_continuous(breaks = c(2013,2022)) +
@@ -334,10 +348,11 @@ area_sac <- ggplot(hist_sac, aes(x = year, y = percent, fill = water_type)) +
     legend.position = "bottom",
     
     # Adjust title 
-    strip.text = element_text(size = rel(3.5), color = "#8EBFDA"),
+    plot.title = element_text(size = rel(6), color = "#8EBFDA", hjust = 0.5),
+    #strip.text = element_text(size = rel(3.5), color = "#8EBFDA"),
     
     # Adjust x-axis text 
-    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(5)),
+    axis.text.x = element_text(hjust = 0.5, size = rel(5)),
     
     # Adjust y-axis size 
     axis.text.y = element_text(size = rel(5)),
@@ -356,11 +371,16 @@ area_sac <- ggplot(hist_sac, aes(x = year, y = percent, fill = water_type)) +
     
     # Get rid of panel grid 
     panel.grid = element_blank(),
-    legend.text = element_text(color = "#8EBFDA"),
+    legend.text = element_text(color = "#8EBFDA", size = rel(3.5)),
     legend.title = element_blank(),
-    panel.border = element_blank()
+    panel.border = element_blank(),
+    legend.key.height = unit(1, "cm"),
+   legend.key.width = unit(1,"cm")
     
   ) 
+
+
+ggsave("area_sac.pdf", plot = area_sac, width = 18, height = 9, dpi = 300)
 ```
 
 ```{r}
@@ -396,7 +416,6 @@ hist_ventura <- historical_production %>%
 # Code same as Sacramento 
 area_ventura <- ggplot(hist_ventura, aes(x = year, y = percent, fill = water_type)) + 
   geom_area() +
-  facet_wrap(~county, scales = "free", ncol = 1) +
   scale_x_continuous(breaks = c(2013,2022)) +
   scale_y_continuous(labels = scales::label_percent(scale = 1)) +
   scale_fill_manual(values = c("#8EBFDA", "darkorange", "#00CEBC", "#1C3698"),
@@ -405,12 +424,14 @@ area_ventura <- ggplot(hist_ventura, aes(x = year, y = percent, fill = water_typ
                                "recycled" = "Recycled",
                                "surface water" = "Surface Water")) +
   labs(x = element_blank(),
-       y = element_blank()) +
+       y = element_blank(),
+       title = "Ventura") +
   theme_minimal() +
   theme(
     legend.position = "bottom",
-    strip.text = element_text(size = rel(3.5), color = "#8EBFDA"),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = rel(5)),
+    plot.title = element_text(size = rel(6), color = "#8EBFDA", hjust = 0.5),
+   # strip.text = element_text(size = rel(3.5), color = "#8EBFDA"),
+    axis.text.x = element_text(hjust = 0.5, size = rel(5)),
     axis.text.y = element_text(size = rel(5)),
     plot.background = element_rect(fill = "#02042C"),
     #axis.ticks.x = element_blank(),
@@ -418,11 +439,15 @@ area_ventura <- ggplot(hist_ventura, aes(x = year, y = percent, fill = water_typ
     axis.text.x.bottom = element_text(color = "#8EBFDA"),
     axis.text.y.left = element_text(color = "#8EBFDA"),
     panel.grid = element_blank(),
-    legend.text = element_text(color = "#8EBFDA"),
-    legend.title = element_blank()
+    legend.text = element_text(color = "#8EBFDA", size = rel(3.5)),
+    legend.title = element_blank(),
+   legend.key.height = unit(1, "cm"),
+   legend.key.width = unit(1,"cm")
   )
+
+ggsave("area_ventura.pdf", plot = area_ventura, width = 18, height = 9, dpi = 300)
 ```
-<<<<<<< Updated upstream
+
 
 ```{r}
 #| code-fold: true
@@ -460,5 +485,4 @@ proportions_2024 <- historical_filter2 %>%
   mutate(percentage = quantity / sum(quantity) * 100) %>% 
   ungroup()
 ```
-=======
->>>>>>> Stashed changes
+
