@@ -1,5 +1,5 @@
 ---
-title: "Blog Post"
+title: "Water Shortage Comparison between Sacramento and Ventura Counties"
 author: "Tom Gibbens-Matsuyama"
 format: html
 editor: visual
@@ -18,7 +18,11 @@ California is a diverse and beautiful state, however, it suffers from long perio
 
 ![Infographic](EDS240-infographic-5.jpg)
 
+<<<<<<< Updated upstream
 ### Part 3: Body
+=======
+### Part 3: Design Elements
+>>>>>>> Stashed changes
 
 When creating any type of visualization, it is important to follow the 10 design elements. These elements were implemented into my visualization by the following:
 
@@ -418,6 +422,7 @@ area_ventura <- ggplot(hist_ventura, aes(x = year, y = percent, fill = water_typ
     legend.title = element_blank()
   )
 ```
+<<<<<<< Updated upstream
 
 ```{r}
 #| code-fold: true
@@ -455,3 +460,5 @@ proportions_2024 <- historical_filter2 %>%
   mutate(percentage = quantity / sum(quantity) * 100) %>% 
   ungroup()
 ```
+=======
+>>>>>>> Stashed changes
