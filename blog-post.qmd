@@ -78,6 +78,7 @@ California_Counties <- st_read(here("data", "California_Counties", "California_C
 ca_project <- st_read(here("data", "i17_StateWaterProject_ConstructionDivisions", "i17_StateWaterProject_ConstructionDivisions.shp"))
 ca_lakes <- st_read(here("data", "California_Lakes", "California_Lakes.shp"))
 ca_state_project <- st_read(here("data", "i17_StateWaterProject_Repayment_Reaches", "i17_StateWaterProject_Repayment_Reaches.shp"))
+ca_rivers <- st_read(here("data", "Rivers", "Rivers.shp"))
 ```
 
 #### Code for the heatmap plot
@@ -225,6 +226,8 @@ ca_counties <- ca_counties %>%
     TRUE ~ "#182C4D" # Color for all other counties
   )) 
 
+ca_sac_amer_river <- ca_rivers %>% 
+  filter(NAME %in% c("American", "Sacramento"))
 
 ca_boundary <- st_transform(ca_boundary, crs = 4326)
 ca_counties <- st_transform(ca_counties, crs = 4326)
@@ -265,7 +268,11 @@ cali_map <- tm_shape(ca_boundary) + # State boundary data
     tm_lines(col = "darkorange",
            lwd = 1.5) +
   tm_shape(ca_oroville) +
-  tm_dots(fill  = "red", size = 0.5)
+  tm_dots(fill = "black", size = 0.55) +
+  tm_dots(fill  = "red", size = 0.3) +
+  tm_shape(ca_sac_amer_river) +
+  tm_lines(col = "black", lwd = 3) +
+  tm_lines(col = "magenta", lwd = 1.5)
   
 
 
