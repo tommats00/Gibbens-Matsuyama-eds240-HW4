@@ -76,6 +76,8 @@ ca_boundary <- st_read(here("data", "ca_state", "CA_State.shp"))
 project_line <- st_read(here("data", "i17_StateWaterProject_Centerline", "i17_StateWaterProject_Centerline.shp"))
 California_Counties <- st_read(here("data", "California_Counties", "California_Counties.shp"))
 ca_project <- st_read(here("data", "i17_StateWaterProject_ConstructionDivisions", "i17_StateWaterProject_ConstructionDivisions.shp"))
+ca_lakes <- st_read(here("data", "California_Lakes", "California_Lakes.shp"))
+ca_state_project <- st_read(here("data", "i17_StateWaterProject_Repayment_Reaches", "i17_StateWaterProject_Repayment_Reaches.shp"))
 ```
 
 #### Code for the heatmap plot
@@ -208,6 +210,29 @@ ggsave("vent_monthly.pdf", plot = vent_monthly, width = 18, height = 9, dpi = 30
 #### Creating the map from the geospatial data
 
 ```{r}
+# Filter for the lakes
+ca_oroville <- ca_lakes %>% 
+  filter(NAME == "Lake Oroville") %>% 
+  st_drop_geometry() %>% 
+  st_as_sf(coords = c("LON_NAD83", "LAT_NAD83"))
+
+# Filter the geospatial data to plot county
+ca_counties <- ca_counties %>% 
+  clean_names() %>% 
+  mutate(color = case_when(
+    name == "Ventura" ~ "#8EBFDA", # Color for Ventura county 
+    name == "Sacramento" ~ "#8EBFDA", # Color for Sacramento County 
+    TRUE ~ "#182C4D" # Color for all other counties
+  )) 
+
+
+ca_boundary <- st_transform(ca_boundary, crs = 4326)
+ca_counties <- st_transform(ca_counties, crs = 4326)
+ca_oroville <- st_transform(ca_oroville, crs = 4326)
+```
+
+
+```{r}
 #| code-fold: true
 #| code-summary: Show the code
 
@@ -230,7 +255,7 @@ cali_map <- tm_shape(ca_boundary) + # State boundary data
   tm_layout(frame = FALSE) +
   
   # Adding the State Water Project Line
-  tm_shape(ca_project) +
+  tm_shape(ca_state_project) +
   
   # Bolding our orange line
     tm_lines(col = "black", 
@@ -238,7 +263,10 @@ cali_map <- tm_shape(ca_boundary) + # State boundary data
   
   # Line we want to see 
     tm_lines(col = "darkorange",
-           lwd = 1.5)
+           lwd = 1.5) +
+  tm_shape(ca_oroville) +
+  tm_dots(fill  = "red", size = 0.5)
+  
 
 
 # Filter for the individual county
